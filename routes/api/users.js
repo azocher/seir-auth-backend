@@ -53,12 +53,47 @@ router.post('/register', function(req, res) {
                     })
                 })
             }
-        
+        }
 ) 
 })
 
-    
 // GET log people in and check their credentials agaist existing User data
+router.post('/login', function(req, res) {
+    const email = req.body.email
+    const password = req.body.password
+
+    // check for user credentials against our existing user data
+    User.findOne({ email })
+        .then(user => {
+            // else we will not authenticate
+            if (!user) {
+                return res.status(400).json({ email: 'User not found' })
+            }
+
+            // see if hashed pass matches inputed pass
+            bcrypt.compare(password, user.password)
+                .then(isMatch => {
+                    // if we are good go, sign our jwt
+                    if (isMatch) {
+                        // create token payload
+                        const payload = { id: user.id, name: user.name, avatar: user.avatar }
+                        
+                        // sign the token
+                        jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: 3600 }, (err, token) => {
+                            res.json({ success: true, token: 'Bearer ' + token })
+                        })
+                        
+                    } else {
+                        // if password does not match
+                        return res.status(400).json({ password: 'Password is incorrect.'})
+                    }
+
+                })
+        })
+       
+        
+})
+    
 // GET if already logged in, set user data to current
 
 module.exports = router
