@@ -43,7 +43,9 @@ router.post('/register', function(req, res) {
                 bcrypt.genSalt(10, (err, salt) => {
                     bcrypt.hash(newUser.password, salt, (err, hash) => {
                         // if error throw error
-                        if (err) throw err
+                        if (err) {
+                            throw err
+                        }
                         // if no error, set password to hashed pass
                         newUser.password = hash
                         newUser.save()
@@ -82,7 +84,7 @@ router.post('/login', function(req, res) {
                         jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: 3600 }, (err, token) => {
                             res.json({ success: true, token: 'Bearer ' + token })
                         })
-                        
+
                     } else {
                         // if password does not match
                         return res.status(400).json({ password: 'Password is incorrect.'})
