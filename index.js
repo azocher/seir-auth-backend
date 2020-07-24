@@ -31,10 +31,15 @@ mongoose.connect(db)
     .catch(err => console.log(err))
 
 // test routing
+app.get('/', function(req, res) {
+    res.send("Hello, World!\nServer is up and running! 🤗")
+})
 
 // passport middleware
+app.use(passport.initialize())
 
 // passport JWT token set/config
+require('./config/passport')(passport)
 
 // setup our routes
 
